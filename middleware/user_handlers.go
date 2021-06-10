@@ -7,49 +7,11 @@ import (
     "go-postgres/models" // models package where User schema is defined
     "log"
     "net/http" // used to access the request and response object of the api
-    "os"       // used to read the environment variable
     "strconv"  // package used to covert string into int type
 
     "github.com/gorilla/mux" // used to get the params from the route
-
-    "github.com/joho/godotenv" // package used to read the .env file
     _ "github.com/lib/pq"      // postgres golang driver
 )
-
-// response format
-type response struct {
-    ID      int64  `json:"id,omitempty"`
-    Message string `json:"message,omitempty"`
-}
-
-// create connection with postgres db
-func createConnection() *sql.DB {
-    // load .env file
-    err := godotenv.Load(".env")
-
-    if err != nil {
-        log.Fatalf("Error loading .env file")
-    }
-
-    // Open the connection
-    db, err := sql.Open("postgres", os.Getenv("POSTGRES_URL"))
-
-    if err != nil {
-        panic(err)
-    }
-
-    // check the connection
-    err = db.Ping()
-
-    if err != nil {
-        panic(err)
-    }
-
-    fmt.Println("Successfully connected!")
-    // return the connection
-    return db
-}
-
 
 // CreateUser create a user in the postgres db
 func CreateUser(w http.ResponseWriter, r *http.Request) {
@@ -231,14 +193,14 @@ func insertUser(user models.User) int64 {
 
     // create the insert sql query
     // returning userid will return the id of the inserted user
-    sqlStatement := `INSERT INTO users (first_name, last_name, email, password_hash) VALUES ($1, $2, $3, $4) RETURNING userid`
+    sqlStatement := `INSERT INTO users (userid,first_name, last_name, password_hash) VALUES ($1, $2, $3, $4) RETURNING userid`
 
     // the inserted id will store in this id
     var id int64
 
     // execute the sql statement
     // Scan function will save the insert id in the id
-    err := db.QueryRow(sqlStatement, user.First_Name, user.Last_Name, user.Email, user.Password).Scan(&id)
+    err := db.QueryRow(sqlStatement, user.ID, user.First_Name, user.Last_Name, user.Password).Scan(&id)
 
     if err != nil {
         log.Fatalf("Unable to execute the query. %v", err)
@@ -268,7 +230,7 @@ func getUser(id int64) (models.User, error) {
     row := db.QueryRow(sqlStatement, id)
 
     // unmarshal the row object to user
-    err := row.Scan(&user.ID, &user.First_Name, &user.Last_Name, &user.Email, &user.Password, &user.IsAdmin)
+    err := row.Scan(&user.ID, &user.First_Name, &user.Last_Name, &user.Password, &user.IsAdmin)
 
     switch err {
     case sql.ErrNoRows:
@@ -301,7 +263,7 @@ func getUserLoginInfo(email string) (models.User, error) {
     row := db.QueryRow(sqlStatement, email)
 
     // unmarshal the row object to user
-    err := row.Scan(&user.ID, &user.First_Name, &user.Last_Name, &user.Email, &user.Password, &user.IsAdmin)
+    err := row.Scan(&user.ID, &user.First_Name, &user.Last_Name, &user.Password, &user.IsAdmin)
 
     switch err {
     case sql.ErrNoRows:
@@ -346,7 +308,7 @@ func getAllUsers() ([]models.User, error) {
         var user models.User
 
         // unmarshal the row object to user
-        err = rows.Scan(&user.ID, &user.First_Name, &user.Last_Name, &user.Email, &user.Password, &user.IsAdmin)
+        err = rows.Scan(&user.ID, &user.First_Name, &user.Last_Name, &user.Password, &user.IsAdmin)
 
         if err != nil {
             log.Fatalf("Unable to scan the row. %v", err)
