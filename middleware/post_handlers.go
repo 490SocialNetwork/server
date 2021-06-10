@@ -11,7 +11,7 @@ import (
 
     "github.com/gorilla/mux" // used to get the params from the route
 
-    _ "github.com/lib/pq"      // postgres golang driver
+    _ "github.com/lib/pq"      // postgres golang drivers
 )
 
 // CreateUser create a user in the postgres db

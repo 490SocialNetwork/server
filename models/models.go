@@ -14,6 +14,7 @@ type Posts struct {
 	ID         int64 `json:"postid"`
 	UserId     string `json:"userid"`
 	Message    string `json:"message_txt"`
+	Comments   
 }
 
 // Comments schema of the comments table
