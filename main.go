@@ -9,10 +9,10 @@ import (
 
 func main() {
     r := router.Router()
-    // fs := http.FileServer(http.Dir("build"))
-    // http.Handle("/", fs)
-    //fmt.Println("Starting server on the port 8080...")
-    // port := os.Getenv("PORT")
-    // fmt.Println("Starting server on the port",port)
-    log.Fatal(http.ListenAndServe(":"+os.Getenv("PORT"), r))
+    var port string
+    var def bool
+    if port, def = os.LookupEnv("PORT"); !def {
+        port = ":8000"
+    }
+    log.Fatal(http.ListenAndServe(port, r))
 }
