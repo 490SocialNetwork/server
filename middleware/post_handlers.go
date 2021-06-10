@@ -46,7 +46,7 @@ func CreatePost(w http.ResponseWriter, r *http.Request) {
     json.NewEncoder(w).Encode(res)
 }
 
-// GetUser will return a single user by its id
+// GetUser will return a single user by its ids
 func GetPost(w http.ResponseWriter, r *http.Request) {
     w.Header().Set("Context-Type", "application/x-www-form-urlencoded")
     w.Header().Set("Access-Control-Allow-Origin", "*")
