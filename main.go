@@ -12,7 +12,7 @@ func main() {
     var port string
     var def bool
     if port, def = os.LookupEnv("PORT"); !def {
-        port = ":8000"
+        port = "8000"
     }
-    log.Fatal(http.ListenAndServe(port, r))
+    log.Fatal(http.ListenAndServe(":",port, r))
 }
