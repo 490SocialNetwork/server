@@ -37,7 +37,7 @@ func CreatePost(w http.ResponseWriter, r *http.Request) {
     insertID := insertPost(post)
 
     // format a response object
-    res := response_int{
+    res := response{
         ID:      insertID,
         Message: "User created successfully",
     }
@@ -90,7 +90,7 @@ func GetAllPosts(w http.ResponseWriter, r *http.Request) {
 
 //------------------------- handler functions ----------------
 // insert one user in the DB
-func insertPost(post models.Posts) int64 {
+func insertPost(post models.Posts) string {
 
     // create the postgres db connection
     db := createConnection()
@@ -103,7 +103,7 @@ func insertPost(post models.Posts) int64 {
     sqlStatement := `INSERT INTO posts (userid, message_txt) VALUES ($1, $2) RETURNING userid`
 
     // the inserted id will store in this id
-    var id int64
+    var id string
 
     // execute the sql statement
     // Scan function will save the insert id in the id
