@@ -11,9 +11,15 @@ import (
 
 // response format
 type response struct {
+    ID      string  `json:"id,omitempty"`
+    Message string `json:"message,omitempty"`
+}
+
+type response_int struct {
     ID      int64  `json:"id,omitempty"`
     Message string `json:"message,omitempty"`
 }
+
 
 // create connection with postgres db
 func createConnection() *sql.DB {

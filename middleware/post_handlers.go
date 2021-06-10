@@ -37,7 +37,7 @@ func CreatePost(w http.ResponseWriter, r *http.Request) {
     insertID := insertPost(post)
 
     // format a response object
-    res := response{
+    res := response_int{
         ID:      insertID,
         Message: "User created successfully",
     }

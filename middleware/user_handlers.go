@@ -85,105 +85,9 @@ func GetAllUser(w http.ResponseWriter, r *http.Request) {
     json.NewEncoder(w).Encode(users)
 }
 
-func GetUserLogin(w http.ResponseWriter, r *http.Request) {
-    w.Header().Set("Context-Type", "application/x-www-form-urlencoded")
-    w.Header().Set("Access-Control-Allow-Origin", "*")
-    // get all the users in the db
-    params := mux.Vars(r)
-
-    email := params["email"]
-
-    users, err := getUserLoginInfo(string(email))
-
-    if err != nil {
-        log.Fatalf("Unable to get all user. %v", err)
-    }
-
-    // send all the users as response
-    json.NewEncoder(w).Encode(users)
-}
-
-// UpdateUser update user's detail in the postgres db
-func UpdateUser(w http.ResponseWriter, r *http.Request) {
-
-    w.Header().Set("Content-Type", "application/x-www-form-urlencoded")
-    w.Header().Set("Access-Control-Allow-Origin", "*")
-    w.Header().Set("Access-Control-Allow-Methods", "PUT")
-    w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
-
-    // get the userid from the request params, key is "id"
-    params := mux.Vars(r)
-
-    // convert the id type from string to int
-    id, err := strconv.Atoi(params["id"])
-
-    if err != nil {
-        log.Fatalf("Unable to convert the string into int.  %v", err)
-    }
-
-    // create an empty user of type models.User
-    var user models.User
-
-    // decode the json request to user
-    err = json.NewDecoder(r.Body).Decode(&user)
-
-    if err != nil {
-        log.Fatalf("Unable to decode the request body.  %v", err)
-    }
-
-    // call update user to update the user
-    updatedRows := updateUser(int64(id), user)
-
-    // format the message string
-    msg := fmt.Sprintf("User updated successfully. Total rows/record affected %v", updatedRows)
-
-    // format the response message
-    res := response{
-        ID:      int64(id),
-        Message: msg,
-    }
-
-    // send the response
-    json.NewEncoder(w).Encode(res)
-}
-
-// DeleteUser delete user's detail in the postgres db
-func DeleteUser(w http.ResponseWriter, r *http.Request) {
-
-    w.Header().Set("Context-Type", "application/x-www-form-urlencoded")
-    w.Header().Set("Access-Control-Allow-Origin", "*")
-    w.Header().Set("Access-Control-Allow-Methods", "DELETE")
-    w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
-
-    // get the userid from the request params, key is "id"
-    params := mux.Vars(r)
-
-    // convert the id in string to int
-    id, err := strconv.Atoi(params["id"])
-
-    if err != nil {
-        log.Fatalf("Unable to convert the string into int.  %v", err)
-    }
-
-    // call the deleteUser, convert the int to int64
-    deletedRows := deleteUser(int64(id))
-
-    // format the message string
-    msg := fmt.Sprintf("User updated successfully. Total rows/record affected %v", deletedRows)
-
-    // format the reponse message
-    res := response{
-        ID:      int64(id),
-        Message: msg,
-    }
-
-    // send the response
-    json.NewEncoder(w).Encode(res)
-}
-
 //------------------------- handler functions ----------------
 // insert one user in the DB
-func insertUser(user models.User) int64 {
+func insertUser(user models.User) string {
 
     // create the postgres db connection
     db := createConnection()
@@ -196,7 +100,7 @@ func insertUser(user models.User) int64 {
     sqlStatement := `INSERT INTO users (userid,first_name, last_name, password_hash) VALUES ($1, $2, $3, $4) RETURNING userid`
 
     // the inserted id will store in this id
-    var id int64
+    var id string
 
     // execute the sql statement
     // Scan function will save the insert id in the id
@@ -322,66 +226,3 @@ func getAllUsers() ([]models.User, error) {
     // return empty user on error
     return users, err
 }	
-
-
-// update user in the DB
-func updateUser(id int64, user models.User) int64 {
-
-    // create the postgres db connection
-    db := createConnection()
-
-    // close the db connection
-    defer db.Close()
-
-    // create the update sql query
-    sqlStatement := `UPDATE users SET first_name=$2, last_name=$3 WHERE userid=$1`
-
-    // execute the sql statement
-    res, err := db.Exec(sqlStatement, id, user.First_Name, user.Last_Name)
-
-    if err != nil {
-        log.Fatalf("Unable to execute the query. %v", err)
-    }
-
-    // check how many rows affected
-    rowsAffected, err := res.RowsAffected()
-
-    if err != nil {
-        log.Fatalf("Error while checking the affected rows. %v", err)
-    }
-
-    fmt.Printf("Total rows/record affected %v", rowsAffected)
-
-    return rowsAffected
-}
-
-// delete user in the DB
-func deleteUser(id int64) int64 {
-
-    // create the postgres db connection
-    db := createConnection()
-
-    // close the db connection
-    defer db.Close()
-
-    // create the delete sql query
-    sqlStatement := `DELETE FROM users WHERE userid=$1`
-
-    // execute the sql statement
-    res, err := db.Exec(sqlStatement, id)
-
-    if err != nil {
-        log.Fatalf("Unable to execute the query. %v", err)
-    }
-
-    // check how many rows affected
-    rowsAffected, err := res.RowsAffected()
-
-    if err != nil {
-        log.Fatalf("Error while checking the affected rows. %v", err)
-    }
-
-    fmt.Printf("Total rows/record affected %v", rowsAffected)
-
-    return rowsAffected
-}

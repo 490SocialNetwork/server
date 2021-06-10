@@ -37,7 +37,7 @@ func CreateComment(w http.ResponseWriter, r *http.Request) {
     insertID := insertComment(comment)
 
     // format a response object
-    res := response{
+    res := response_int{
         ID:      insertID,
         Message: "User created successfully",
     }
