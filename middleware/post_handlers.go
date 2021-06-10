@@ -73,9 +73,9 @@ func GetPost(w http.ResponseWriter, r *http.Request) {
 
 // GetAllUser will return all the users
 func GetAllPosts(w http.ResponseWriter, r *http.Request) {
-    w.Header().Set("Context-Type", "application/x-www-form-urlencoded")
-    w.Header().Set("Access-Control-Allow-Origin", "*")
-    // get all the users in the db
+	w.Header().Set("Content-Type", "text/html; charset=utf-8")
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	// get all the users in the db
     posts, err := getAllPosts()
 
     if err != nil {
