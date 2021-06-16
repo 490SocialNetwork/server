@@ -7,7 +7,6 @@ import (
     "go-postgres/models" // models package where User schema is defined
     "log"
     "net/http" // used to access the request and response object of the api
-    "strconv"  // package used to covert string into int type
 
     "github.com/gorilla/mux" // used to get the params from the route
     _ "github.com/lib/pq"      // postgres golang driver
@@ -53,14 +52,10 @@ func GetUser(w http.ResponseWriter, r *http.Request) {
     params := mux.Vars(r)
 
     // // convert the id type from string to int
-    // id, err := strconv.Atoi(params["id"])
-
-    if err != nil {
-        log.Fatalf("Unable to convert the string into int.  %v", err)
-    }
+    id := params["id"]
 
     // call the getUser function with user id to retrieve a single user
-    user, err := getUser(int64(id))
+    user, err := getUser(id)
 
     if err != nil {
         log.Fatalf("Unable to get user. %v", err)
@@ -117,7 +112,7 @@ func insertUser(user models.User) string {
 }
 
 // get one user from the DB by its userid
-func getUser(id int64) (models.User, error) {
+func getUser(id string) (models.User, error) {
     // create the postgres db connection
     db := createConnection()
 
