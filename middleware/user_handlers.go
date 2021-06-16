@@ -52,8 +52,8 @@ func GetUser(w http.ResponseWriter, r *http.Request) {
     // get the userid from the request params, key is "id"
     params := mux.Vars(r)
 
-    // convert the id type from string to int
-    id, err := strconv.Atoi(params["id"])
+    // // convert the id type from string to int
+    // id, err := strconv.Atoi(params["id"])
 
     if err != nil {
         log.Fatalf("Unable to convert the string into int.  %v", err)
