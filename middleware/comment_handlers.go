@@ -131,7 +131,7 @@ func getComment(id int64) (models.Comments, error) {
     var comment models.Comments
 
     // create the select sql query
-    sqlStatement := `SELECT * FROM comments WHERE commentid=$1`
+    sqlStatement := `SELECT * FROM comments WHERE postid=$1`
 
     // execute the sql statement
     row := db.QueryRow(sqlStatement, id)

@@ -10,8 +10,7 @@ import (
     "strconv"  // package used to covert string into int type
 
     "github.com/gorilla/mux" // used to get the params from the route
-
-    _ "github.com/lib/pq"      // postgres golang drivers
+	//"github.com/lib/pq"      // postgres golang drivers
 )
 
 // CreateUser create a user in the postgres db
@@ -142,10 +141,21 @@ func getPost(id int64) (models.Posts_All, error) {
 		Select a.postid,a.message_txt,a.userid,b.replies from a join b on (a.postid=b.postid)`
 
     // execute the sql statement
-    row := db.QueryRow(sqlStatement, id)
+    rows,err := db.Query(sqlStatement, id)
+
+    for rows.Next() {
+        err := rows.Scan(&post.ID,&post.Message,&post.UserId, &post.Replies)
+        if err != nil {
+            log.Fatal(err)
+        }
+
+        // log.Println(id, title)
+        // reps = append(users, User{Id: id, Title: title})
+    }
+
 
     // unmarshal the row object to user
-    err := row.Scan(&post.ID,&post.Message,&post.UserId, &post.Replies)
+    // err := row.Scan(&post.ID,&post.Message,&post.UserId, &post.Replies)
 
     switch err {
     case sql.ErrNoRows:

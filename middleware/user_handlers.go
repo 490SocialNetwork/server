@@ -7,7 +7,6 @@ import (
     "go-postgres/models" // models package where User schema is defined
     "log"
     "net/http" // used to access the request and response object of the api
-
     "github.com/gorilla/mux" // used to get the params from the route
     _ "github.com/lib/pq"      // postgres golang driver
 )
@@ -103,13 +102,57 @@ func insertUser(user models.User) string {
 
     if err != nil {
         log.Fatalf("Unable to execute the query. %v", err)
-    }
+	}
+	// addUserToChat(user.ID,user.Password)
 
     fmt.Printf("Inserted a single record %v", id)
 
     // return the inserted id
     return id
 }
+
+// func addUserToChat(userid string, password string) {
+
+// 	fmt.Println(userid)
+// 	fmt.Println(password)
+
+// 	url := "https://api.chatengine.io/users/"
+// 	method := "POST"
+
+// 	payload := strings.NewReader(fmt.Sprintf(`{"username": "%s", "secret": "%s"}`, userid,password))
+
+// 	// // payload := strings.NewReader(`{
+// 	// // 	"username": "bob_baker",
+// 	// // 	"secret": "password_1234"
+// 	// // }`)
+	
+// 	// fmt.Println(payload)
+  
+// 	client := &http.Client {
+// 	}
+// 	req, err := http.NewRequest(method, url, payload)
+  
+// 	if err != nil {
+// 	  fmt.Println(err)
+// 	  return
+// 	}
+// 	req.Header.Add()
+// 	req.Header.Add("PRIVATE-KEY", "{{58172a6c-d908-4058-896f-077864a534a7}}")
+  
+// 	res, err := client.Do(req)
+// 	if err != nil {
+// 	  fmt.Println(err)
+// 	  return
+// 	}
+// 	defer res.Body.Close()
+  
+// 	body, err := ioutil.ReadAll(res.Body)
+// 	if err != nil {
+// 	  fmt.Println(err)
+// 	  return
+// 	}
+// 	fmt.Println(string(body))
+//   }
 
 // get one user from the DB by its userid
 func getUser(id string) (models.User, error) {
