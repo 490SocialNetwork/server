@@ -120,7 +120,7 @@ func insertPost(post models.Posts) string {
 }
 
 // get one post from the DB by its userid
-func getPost(id int64) (models.Posts, error) {
+func getPost(id int64) (models.Posts_All, error) {
     // create the postgres db connection
     db := createConnection()
 
@@ -128,16 +128,24 @@ func getPost(id int64) (models.Posts, error) {
     defer db.Close()
 
     // create a user of models.User type
-    var post models.Posts
+    var post models.Posts_All
 
     // create the select sql query
-    sqlStatement := `SELECT * FROM posts WHERE postid=$1`
+    sqlStatement := `With a as (
+		SELECT p.postid,p.message_txt,p.userid FROM posts p 
+		WHERE p.postid=$1
+		),
+		b as (
+		select postid,array[userid::text,message_txt] as replies
+		FROM comments WHERE postid = $1
+		)
+		Select a.postid,a.message_txt,a.userid,b.replies from a join b on (a.postid=b.postid)`
 
     // execute the sql statement
     row := db.QueryRow(sqlStatement, id)
 
     // unmarshal the row object to user
-    err := row.Scan(&post.ID, &post.UserId, &post.Message)
+    err := row.Scan(&post.ID,&post.Message,&post.UserId, &post.Replies)
 
     switch err {
     case sql.ErrNoRows:

@@ -1,5 +1,9 @@
 package models
 
+import (
+	"github.com/lib/pq"
+)
+
 // User schema of the user table
 type User struct {
 	ID         string `json:"userid"`
@@ -13,8 +17,19 @@ type User struct {
 type Posts struct {
 	ID         int64 `json:"postid"`
 	UserId     string `json:"userid"`
+	Message    string `json:"message_txt"`   
+}
+
+type Posts_All struct {
+	ID         int64 `json:"postid"`
+	UserId     string `json:"userid"`
 	Message    string `json:"message_txt"`
-	Comments   
+	Replies pq.StringArray
+}
+
+type Reply struct {
+	UserId     string `json:"userid"`
+	Message    string `json:"message_txt"`
 }
 
 // Comments schema of the comments table
