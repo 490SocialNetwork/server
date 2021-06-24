@@ -257,8 +257,8 @@ func deletePost(id int64) int64 {
     defer db.Close()
 
     // create the delete sql query
-    sqlStatement := `DELETE FROM posts WHERE postid=$1`
-	sqlStatement2 := `DELETE FROM comments WHERE postid=$1`
+    sqlStatement := `DELETE FROM comments WHERE postid=$1`
+	sqlStatement2 := `DELETE FROM posts WHERE postid=$1`
 
     // execute the sql statement
     res, err := db.Exec(sqlStatement, id)

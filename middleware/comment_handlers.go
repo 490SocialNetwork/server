@@ -37,7 +37,7 @@ func CreateComment(w http.ResponseWriter, r *http.Request) {
     insertID := insertComment(comment)
 
     // format a response object
-    res := response_int{
+    res := response{
         ID:      insertID,
         Message: "Comment created successfully",
     }
@@ -90,7 +90,7 @@ func GetAllComments(w http.ResponseWriter, r *http.Request) {
 
 //------------------------- handler functions ----------------
 // insert one user in the DB
-func insertComment(comment models.Comments) int64 {
+func insertComment(comment models.Comments) string {
 
     // create the postgres db connection
     db := createConnection()
@@ -103,7 +103,7 @@ func insertComment(comment models.Comments) int64 {
     sqlStatement := `INSERT INTO comments (userid,postid, message_txt) VALUES ($1, $2, $3) RETURNING userid`
 
     // the inserted id will store in this id
-    var id int64
+    var id string
 
     // execute the sql statement
     // Scan function will save the insert id in the id
