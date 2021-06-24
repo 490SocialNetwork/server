@@ -1,7 +1,7 @@
 package middleware
 
 import (
-    "database/sql"
+//    "database/sql"
     "encoding/json" // package to encode and decode the json into struct and vice versa
     "fmt"
     "go-postgres/models" // models package where User schema is defined
@@ -120,7 +120,7 @@ func insertComment(comment models.Comments) string {
 }
 
 // get one post from the DB by its userid
-func getComment(id int64) (models.Comments, error) {
+func getComment(id int64) ([]models.Comments, error) {
     // create the postgres db connection
     db := createConnection()
 
@@ -128,29 +128,40 @@ func getComment(id int64) (models.Comments, error) {
     defer db.Close()
 
     // create a user of models.User type
-    var comment models.Comments
+    var comments []models.Comments
 
     // create the select sql query
     sqlStatement := `SELECT * FROM comments WHERE postid=$1`
 
     // execute the sql statement
-    row := db.QueryRow(sqlStatement, id)
+    rows,err := db.Query(sqlStatement, id)
 
-    // unmarshal the row object to user
-    err := row.Scan(&comment.ID, &comment.UserId, &comment.PostId, &comment.Message)
+    if err != nil {
+        log.Fatalf("Unable to execute the query. %v", err)
+    }
 
-    switch err {
-    case sql.ErrNoRows:
-        fmt.Println("No rows were returned!")
-        return comment, nil
-    case nil:
-        return comment, nil
-    default:
-        log.Fatalf("Unable to scan the row. %v", err)
+    // close the statement
+    defer rows.Close()
+
+
+    // iterate over the rows
+    for rows.Next() {
+        var comment models.Comments
+
+        // unmarshal the row object to user
+        err = rows.Scan(&comment.ID, &comment.UserId, &comment.PostId, &comment.Message)
+
+        if err != nil {
+            log.Fatalf("Unable to scan the row. %v", err)
+        }
+
+        // append the user in the users slice
+        comments = append(comments, comment)
+
     }
 
     // return empty user on error
-    return comment, err
+    return comments, err
 }
 
 func getAllComments() ([]models.Comments, error) {
