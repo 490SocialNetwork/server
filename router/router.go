@@ -22,6 +22,7 @@ func Router() *mux.Router {
     router.HandleFunc("/api/posts/{id}", middleware.GetPost).Methods("GET", "OPTIONS")
     router.HandleFunc("/api/posts", middleware.GetAllPosts).Methods("GET", "OPTIONS")
     router.HandleFunc("/api/newpost", middleware.CreatePost).Methods("POST", "OPTIONS")
+    router.HandleFunc("/api/deletepost/{id}", middleware.DeletePost).Methods("DELETE", "OPTIONS")
 
     //Comments
     router.HandleFunc("/api/comments/{id}", middleware.GetComment).Methods("GET", "OPTIONS")
